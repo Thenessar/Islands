@@ -15,10 +15,19 @@ def test_clean_the_matrix(setUp):
     assert actual == expected, message
 
 
-def test_check_matrix_appearance(setUp):
+def test_check_matrix_appearance_shape(setUp):
     test_argument = ['0', '0', '0'], ['1', '0', '1']
     setUp.matrix = test_argument
-    expected = "Rectangle"
+    expected = True
+    actual = setUp.check_matrix_appearance()
+    message = f"check_matrix_appearance({test_argument}) should return {expected}, but it actually returned {actual}"
+    assert actual == expected, message
+
+
+def test_check_matrix_appearance_content(setUp):
+    test_argument = ['0', '0', '0'], ['1', '0', '2']
+    setUp.matrix = test_argument
+    expected = False
     actual = setUp.check_matrix_appearance()
     message = f"check_matrix_appearance({test_argument}) should return {expected}, but it actually returned {actual}"
     assert actual == expected, message
@@ -49,7 +58,7 @@ def test_find_number_of_islands(setUp):
                      ['1', '1', '0', '0', '0', '1', '1', '1', '0'], 
                      ['0', '0', '0', '0', '0', '1', '1', '0', '0'], 
                      ['0', '0', '1', '0', '0', '0', '0', '0', '0'], 
-                     ['1', '1', '0', '0', '0', '0', '0', '0', '0'], 
+                     ['1', '1', '0', '1', '0', '0', '0', '0', '0'], 
                      ['0', '0', '0', '0', '0', '1', '1', '0', '0']]
 
     setUp.matrix = test_argument
