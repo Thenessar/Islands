@@ -14,7 +14,7 @@ class Islands:
         self.matrix = tmp_matrix
 
 
-    # Functions checks if matrix is made of zeroes and ones and if its in rectangular shape
+    # Functions checks if matrix is made of zeroes and ones and if its in a rectangular shape
     def check_matrix_appearance(self):
         for row in self.matrix:
             if len(row) != len(self.matrix[0]):
@@ -27,7 +27,7 @@ class Islands:
         return True
 
 
-    # Function checks if it is possible to scan surrounding fields - sometimes those fields would be out of matrix range
+    # Function checks if it is possible to scan surrounding fields - sometimes those fields would be out of matrix's range
     def check_move_possibility(self, field_row, field_column, row_change, column_change):
         if field_row + row_change < 0 or field_row + row_change == len(self.matrix):
             return False
@@ -38,51 +38,31 @@ class Islands:
         return True
 
 
-    # Function is responsible for scanning surrounding fields and checking if they are ones - if so, it will then add such
-    # fields to neighbours list
-    def find_neighbours(self, field_row, field_column):
+    # Function is responsible for scanning surrounding fields and checking if they are ones - if so, it will then
+    # recursively check surrounding fields while changing their value to zero (to make sure we dont check the same
+    # field more than once) untill there is none left. That means we have fully explored the island.
+    def explore_island(self, field_row, field_column):
         moves = [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]]
-        neighbours = []
 
         for move in moves:
             if self.check_move_possibility(field_row, field_column, move[0], move[1]):
                 if self.matrix[field_row + move[0]][field_column + move[1]] == '1':
-                    neighbours.append([field_row + move[0], field_column + move[1]])
-                    
-        return neighbours
+                    self.matrix[field_row + move[0]][field_column + move[1]] = '0'
+                    self.explore_island(field_row + move[0], field_column + move[1])
 
 
-    # This function is iteraiting over every single field of matrix and checks neighbours of each field. If no neighbours of 
-    # the field being checked has been added to neighbours dict before, we can treat such field as a root - that means it is
-    # the first piece of land of an island. Therefore later we can count how many roots we have to get the number of islands
+    # This function is iteraiting over every single field of matrix in search of ones. After finding such field it
+    # will change it's value to 0 and increase the number of islands found. Finally it will start exploring the island.
+    # After we scanned the whole "map", we can print the number of islands.
     def find_number_of_islands(self):
-        neighbours_dict = {}
-        roots = []
+        number_of_islands = 0
 
         for row_index, columns in enumerate(self.matrix):
             for column_index, value in enumerate(columns):
                 if value == '1':
-                    duplicate = 0
-                    neighbours = self.find_neighbours(row_index, column_index)
-
-                    if neighbours == []:
-                        if any([row_index, column_index] in neighbours_dict_value for neighbours_dict_value in neighbours_dict.values()):
-                            duplicate = 1
-                    elif neighbours != []:
-                        for neighbour in neighbours:
-                            if any(neighbour in neighbours_dict_value for neighbours_dict_value in neighbours_dict.values()):
-                                duplicate = 1
-                                break
-                            
-                            if duplicate == 0:
-                                if any([row_index, column_index] in neighbours_dict_value for neighbours_dict_value in neighbours_dict.values()):
-                                    duplicate = 1
-                                    break
-
-                    if duplicate == 0:
-                        roots.append([row_index, column_index])
-
-                    neighbours_dict[str([{row_index}, {column_index}])] = neighbours
+                    number_of_islands += 1
                     self.matrix[row_index][column_index] = '0'
+                    self.explore_island(row_index, column_index)
 
-        return len(roots)
+        return number_of_islands
+
